@@ -1,6 +1,8 @@
-# RideShare App
+# RideShare App 🚗
 
-A Flutter ride-sharing application inspired by Uber.
+[![iOS Build](https://github.com/soufatarek/rideshare_app/actions/workflows/ios_build.yml/badge.svg)](https://github.com/soufatarek/rideshare_app/actions/workflows/ios_build.yml)
+
+A Flutter Ridesharing application. inspired by Uber.
 
 ## Features
 
