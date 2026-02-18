@@ -47,7 +47,7 @@ class _DestinationSearchScreenState
     final savedPlacesAsync = ref.watch(savedPlacesProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      // Background handled by Theme
       body: SafeArea(
         child: Column(
           children: [
@@ -58,7 +58,7 @@ class _DestinationSearchScreenState
                 alignment: Alignment.centerLeft,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -95,7 +95,7 @@ class _DestinationSearchScreenState
                             Container(
                               height: 30,
                               width: 2,
-                              color: Colors.grey[300],
+                              color: Colors.grey[700], // Darker for dark mode
                               margin: const EdgeInsets.symmetric(vertical: 4),
                             ),
                             const Icon(
@@ -115,7 +115,11 @@ class _DestinationSearchScreenState
                               readOnly: true,
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: AppColors.background,
+                                // Theme fillColor will apply, but we can be explicit if needed
+                                fillColor:
+                                    Theme.of(
+                                      context,
+                                    ).inputDecorationTheme.fillColor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: BorderSide.none,
@@ -139,7 +143,10 @@ class _DestinationSearchScreenState
                               inputDecoration: InputDecoration(
                                 hintText: 'Search destination...',
                                 filled: true,
-                                fillColor: Colors.grey[100],
+                                fillColor:
+                                    Theme.of(
+                                      context,
+                                    ).inputDecorationTheme.fillColor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: BorderSide.none,
@@ -149,7 +156,6 @@ class _DestinationSearchScreenState
                                   vertical: 8,
                                 ),
                                 prefixIcon: const Icon(Icons.search, size: 18),
-                                // Add suffix icon to clear text
                                 suffixIcon:
                                     _destinationController.text.isNotEmpty
                                         ? IconButton(
@@ -195,6 +201,14 @@ class _DestinationSearchScreenState
                                     prediction.description ?? '';
                                 _destinationFocus.unfocus();
                               },
+                              // Style the list results
+                              boxDecoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              textStyle:
+                                  Theme.of(context).textTheme.bodyMedium ??
+                                  const TextStyle(),
                             ),
                           ],
                         ),
@@ -218,12 +232,12 @@ class _DestinationSearchScreenState
                           Icon(
                             Icons.bookmark_outline,
                             size: 48,
-                            color: Colors.grey[300],
+                            color: Colors.grey[600],
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'No saved places yet',
-                            style: TextStyle(color: Colors.grey[400]),
+                            style: TextStyle(color: Colors.grey[600]),
                           ),
                         ],
                       ),
@@ -242,10 +256,11 @@ class _DestinationSearchScreenState
 
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: AppColors.background,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surface,
                           child: Icon(
                             icon,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                             size: 20,
                           ),
                         ),

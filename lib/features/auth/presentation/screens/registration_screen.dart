@@ -49,12 +49,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Create Profile',
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
+        title: const Text('Create Profile'), // Theme handles style
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -67,10 +62,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _firstNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'First Name',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'First Name'),
                   validator:
                       (value) =>
                           value == null || value.isEmpty ? 'Required' : null,
@@ -78,10 +70,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _lastNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Last Name',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Last Name'),
                   validator:
                       (value) =>
                           value == null || value.isEmpty ? 'Required' : null,
@@ -90,10 +79,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Email'),
                   validator:
                       (value) =>
                           value != null &&
@@ -105,10 +91,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: authState.isLoading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
+                  // Theme handles style (Primary Color, 8px radius)
                   child:
                       authState.isLoading
                           ? const SizedBox(
@@ -127,7 +110,9 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                   const SizedBox(height: 16),
                   Text(
                     authState.error!,
-                    style: const TextStyle(color: Colors.red),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],

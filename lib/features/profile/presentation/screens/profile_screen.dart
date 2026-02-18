@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -19,9 +18,9 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 0,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -35,13 +34,13 @@ class ProfileScreen extends ConsumerWidget {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Theme.of(context).colorScheme.surface,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.person,
                       size: 60,
-                      color: Colors.grey,
+                      color: Theme.of(context).iconTheme.color,
                     ),
                   ),
                   Positioned(
@@ -49,8 +48,8 @@ class ProfileScreen extends ConsumerWidget {
                     right: 0,
                     child: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.black,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -76,7 +75,7 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Row(
@@ -90,24 +89,29 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 32),
             // Details
-            _buildProfileItem(Icons.phone, 'Mobile Number', phone),
-            _buildProfileItem(Icons.email, 'Email', email),
-            _buildProfileItem(Icons.home, 'Home', 'Add Home'),
-            _buildProfileItem(Icons.work, 'Work', 'Add Work'),
+            _buildProfileItem(context, Icons.phone, 'Mobile Number', phone),
+            _buildProfileItem(context, Icons.email, 'Email', email),
+            _buildProfileItem(context, Icons.home, 'Home', 'Add Home'),
+            _buildProfileItem(context, Icons.work, 'Work', 'Add Work'),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {
-                  ref.read(authProvider.notifier).signOut();
-                  context.go('/'); // Logout
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  side: const BorderSide(color: Colors.red),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: OutlinedButton(
+                  onPressed: () {
+                    ref.read(authProvider.notifier).signOut();
+                    context.go('/'); // Logout
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.error,
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text('Log Out'),
                 ),
-                child: const Text('Log Out'),
               ),
             ),
           ],
@@ -116,12 +120,17 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileItem(IconData icon, String title, String subtitle) {
+  Widget _buildProfileItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String subtitle,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Row(
         children: [
-          Icon(icon, color: Colors.black54),
+          Icon(icon, color: Theme.of(context).iconTheme.color),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -129,9 +138,9 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -145,7 +154,11 @@ class ProfileScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: Theme.of(context).dividerColor,
+          ),
         ],
       ),
     );

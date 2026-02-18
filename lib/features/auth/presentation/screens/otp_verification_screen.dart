@@ -21,17 +21,19 @@ class OtpVerificationScreen extends ConsumerWidget {
 
     final authState = ref.watch(authProvider);
 
-    const defaultPinTheme = PinTheme(
+    final defaultPinTheme = PinTheme(
       width: 56,
       height: 56,
       textStyle: TextStyle(
         fontSize: 20,
-        color: Colors.black,
+        color: Theme.of(context).textTheme.bodyLarge?.color,
         fontWeight: FontWeight.w600,
       ),
       decoration: BoxDecoration(
-        color: AppColors.background,
-        // borderRadius: BorderRadius.circular(8),
+        color:
+            Theme.of(context).inputDecorationTheme.fillColor ??
+            AppColors.background,
+        borderRadius: BorderRadius.circular(8),
       ),
     );
 
@@ -40,7 +42,10 @@ class OtpVerificationScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
@@ -67,19 +72,19 @@ class OtpVerificationScreen extends ConsumerWidget {
                         const Center(child: CircularProgressIndicator())
                       else
                         Pinput(
-                          length:
-                              6, // Firebase usually sends 6 digits, can be 4 for test
-                          defaultPinTheme: defaultPinTheme.copyWith(
-                            decoration: BoxDecoration(
-                              color: AppColors.background,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
+                          length: 6,
+                          defaultPinTheme: defaultPinTheme,
                           focusedPinTheme: defaultPinTheme.copyWith(
                             decoration: BoxDecoration(
-                              color: AppColors.background,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).inputDecorationTheme.fillColor ??
+                                  AppColors.background,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.black),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           ),
                           onCompleted: (pin) {
@@ -95,7 +100,11 @@ class OtpVerificationScreen extends ConsumerWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.background,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).inputDecorationTheme.fillColor ??
+                                  AppColors.background,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: const Text(

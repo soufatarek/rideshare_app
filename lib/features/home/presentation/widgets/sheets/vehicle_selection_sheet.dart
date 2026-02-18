@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/services/pricing_service.dart';
 import '../../../domain/models/vehicle.dart';
 import '../../../../payment/domain/models/payment_method_model.dart';
@@ -30,14 +29,18 @@ class VehicleSelectionSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
         ],
       ),
       child: Column(
@@ -49,7 +52,7 @@ class VehicleSelectionSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey[600],
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -67,7 +70,10 @@ class VehicleSelectionSheet extends StatelessWidget {
               ),
               Text(
                 '${distanceKm.toStringAsFixed(1)} km • ~$estimatedTime min',
-                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -85,6 +91,7 @@ class VehicleSelectionSheet extends StatelessWidget {
                       return GestureDetector(
                         onTap: () => onVehicleSelected(vehicle),
                         child: _buildVehicleOption(
+                          context, // Pass context for theme access
                           vehicle.name,
                           vehicle.description,
                           PricingService.formatPrice(price),
@@ -108,7 +115,7 @@ class VehicleSelectionSheet extends StatelessWidget {
                     selectedPaymentMethod!.type == PaymentType.cash
                         ? Icons.money
                         : Icons.credit_card,
-                    color: Colors.black,
+                    color: Theme.of(context).iconTheme.color,
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -127,8 +134,6 @@ class VehicleSelectionSheet extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onConfirm,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: Text(
@@ -146,6 +151,7 @@ class VehicleSelectionSheet extends StatelessWidget {
   }
 
   Widget _buildVehicleOption(
+    BuildContext context,
     String name,
     String description,
     String price,
@@ -156,12 +162,18 @@ class VehicleSelectionSheet extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.background : Colors.white,
+        color:
+            isSelected
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                : Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border:
             isSelected
-                ? Border.all(color: Colors.black, width: 2)
-                : Border.all(color: Colors.grey[300]!),
+                ? Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                )
+                : Border.all(color: Colors.transparent),
       ),
       child: Row(
         children: [
@@ -170,12 +182,12 @@ class VehicleSelectionSheet extends StatelessWidget {
             width: 60,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               name == 'Black' ? Icons.local_taxi : Icons.directions_car,
-              color: Colors.black87,
+              color: Theme.of(context).iconTheme.color,
             ),
           ),
           const SizedBox(width: 16),
@@ -192,8 +204,8 @@ class VehicleSelectionSheet extends StatelessWidget {
                 ),
                 Text(
                   description,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                     fontSize: 13,
                   ),
                 ),
