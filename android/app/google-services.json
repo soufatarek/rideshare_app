@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "668033377863",
+    "project_id": "rideshare-app-485711",
+    "storage_bucket": "rideshare-app-485711.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668033377863:android:7a28df11946b0710767362",
+        "android_client_info": {
+          "package_name": "com.example.rideshare_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "668033377863-eqr2nfj9pe3ut9f985uh73c7rvoejr07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzTJd5aryzASJNm-QEL7lEf7APl0hJpdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "668033377863-eqr2nfj9pe3ut9f985uh73c7rvoejr07.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "668033377863-6em0il9fimstt8rdk0922k3rl2s8daq8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.seiftarek.rideshareApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668033377863:android:dd242b801a73b2c9767362",
+        "android_client_info": {
+          "package_name": "com.example.untitled"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "668033377863-eqr2nfj9pe3ut9f985uh73c7rvoejr07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzTJd5aryzASJNm-QEL7lEf7APl0hJpdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "668033377863-eqr2nfj9pe3ut9f985uh73c7rvoejr07.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "668033377863-6em0il9fimstt8rdk0922k3rl2s8daq8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.seiftarek.rideshareApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
