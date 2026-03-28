@@ -6,6 +6,9 @@ class DriverArrivingSheet extends StatelessWidget {
   final VoidCallback onMessage;
   final VoidCallback onCancel;
   final String eta;
+  final String driverName;
+  final String carModel;
+  final String carPlate;
 
   const DriverArrivingSheet({
     super.key,
@@ -13,6 +16,9 @@ class DriverArrivingSheet extends StatelessWidget {
     required this.onMessage,
     required this.onCancel,
     this.eta = '2 min',
+    this.driverName = 'Driver',
+    this.carModel = 'Unknown Car',
+    this.carPlate = 'N/A',
   });
 
   @override
@@ -20,14 +26,18 @@ class DriverArrivingSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
         ],
       ),
       child: Column(
@@ -44,26 +54,34 @@ class DriverArrivingSheet extends StatelessWidget {
                     'Arriving in $eta',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Toyota Camry · 5AB 123',
+                    '$carModel · $carPlate',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    driverName,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
                 ],
               ),
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 24,
-                backgroundColor: AppColors.background,
-                child: Icon(Icons.person, color: Colors.black),
+                backgroundColor: AppColors.secondary,
+                child: const Icon(Icons.person, color: AppColors.primary),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          const Divider(),
+          Divider(color: Colors.white.withValues(alpha: 0.12)),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -85,11 +103,17 @@ class DriverArrivingSheet extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundColor: AppColors.background,
-            child: Icon(icon, color: Colors.black),
+            backgroundColor: AppColors.secondary,
+            child: Icon(icon, color: AppColors.primary),
           ),
           const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 12)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
+          ),
         ],
       ),
     );

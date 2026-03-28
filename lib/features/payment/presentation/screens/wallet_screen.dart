@@ -8,10 +8,10 @@ class WalletScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wallet', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: const Text('Wallet'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -23,16 +23,13 @@ class WalletScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.black,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Uber Cash',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  Text('Uber Cash', style: TextStyle(fontSize: 16)),
                   SizedBox(height: 8),
                   Text(
                     '\$0.00',

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-// import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_colors.dart';
 
 class TripCompletedSheet extends StatefulWidget {
   final double price;
   final Function(double) onSubmitRating;
+  final String? driverName;
 
   const TripCompletedSheet({
     super.key,
     required this.price,
     required this.onSubmitRating,
+    this.driverName,
   });
 
   @override
@@ -23,14 +25,18 @@ class _TripCompletedSheetState extends State<TripCompletedSheet> {
     return Container(
       padding: const EdgeInsets.all(24),
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
         ],
       ),
       child: Column(
@@ -44,17 +50,35 @@ class _TripCompletedSheetState extends State<TripCompletedSheet> {
           const SizedBox(height: 16),
           Text(
             'You arrived!',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Total: \$${widget.price.toStringAsFixed(2)}',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            'Total: EGP ${widget.price.toStringAsFixed(0)}',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
           ),
+          if (widget.driverName != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              'Driver: ${widget.driverName}',
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
           const SizedBox(height: 24),
-          const Text('How was your trip?'),
+          const Text(
+            'How was your trip?',
+            style: TextStyle(color: AppColors.textPrimary),
+          ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

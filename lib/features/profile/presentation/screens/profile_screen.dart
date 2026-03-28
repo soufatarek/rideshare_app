@@ -21,6 +21,7 @@ class ProfileScreen extends ConsumerWidget {
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -91,8 +92,28 @@ class ProfileScreen extends ConsumerWidget {
             // Details
             _buildProfileItem(context, Icons.phone, 'Mobile Number', phone),
             _buildProfileItem(context, Icons.email, 'Email', email),
-            _buildProfileItem(context, Icons.home, 'Home', 'Add Home'),
-            _buildProfileItem(context, Icons.work, 'Work', 'Add Work'),
+            const Divider(height: 32),
+            _buildProfileItem(
+              context,
+              Icons.account_balance_wallet,
+              'Payment Methods',
+              'Manage your cards',
+              onTap: () => context.push('/wallet'),
+            ),
+            _buildProfileItem(
+              context,
+              Icons.bookmark,
+              'Saved Places',
+              'Home, Work, Favorites',
+              onTap: () => context.push('/saved-places'),
+            ),
+            _buildProfileItem(
+              context,
+              Icons.settings,
+              'Settings',
+              'Privacy, Security, Notifications',
+              onTap: () => context.push('/settings'),
+            ),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
@@ -124,42 +145,46 @@ class ProfileScreen extends ConsumerWidget {
     BuildContext context,
     IconData icon,
     String title,
-    String subtitle,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      child: Row(
-        children: [
-          Icon(icon, color: Theme.of(context).iconTheme.color),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).textTheme.bodySmall?.color,
+    String subtitle, {
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, color: Theme.of(context).iconTheme.color),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: Theme.of(context).dividerColor,
-          ),
-        ],
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Theme.of(context).dividerColor,
+            ),
+          ],
+        ),
       ),
     );
   }

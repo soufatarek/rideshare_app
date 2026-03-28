@@ -2,26 +2,31 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../features/auth/presentation/screens/login_screen.dart';
-import '../../features/auth/presentation/screens/otp_verification_screen.dart';
-import '../../features/auth/presentation/screens/registration_screen.dart';
-import '../../features/home/presentation/screens/home_screen.dart';
-import '../../features/home/presentation/screens/destination_search_screen.dart';
-import '../../features/profile/presentation/screens/profile_screen.dart';
-import '../../features/profile/presentation/screens/saved_places_screen.dart';
-import '../../features/trips/presentation/screens/trips_screen.dart';
-import '../../features/payment/presentation/screens/wallet_screen.dart';
-import '../../features/settings/presentation/screens/settings_screen.dart';
-import '../../features/settings/presentation/screens/edit_profile_screen.dart';
-import '../../features/settings/presentation/screens/privacy_screen.dart';
-import '../../features/settings/presentation/screens/security_screen.dart';
-import '../../features/settings/presentation/screens/notifications_screen.dart';
+import '../features/auth/presentation/providers/auth_provider.dart';
+import '../features/auth/presentation/screens/login_screen.dart';
+import '../features/auth/presentation/screens/otp_verification_screen.dart';
+import '../features/auth/presentation/screens/registration_screen.dart';
+import '../features/home/presentation/screens/home_screen.dart';
+import '../features/home/presentation/screens/destination_search_screen.dart';
+import '../features/profile/presentation/screens/profile_screen.dart';
+import '../features/profile/presentation/screens/saved_places_screen.dart';
+import '../features/trips/presentation/screens/trips_screen.dart';
+import '../features/payment/presentation/screens/wallet_screen.dart';
+import '../features/settings/presentation/screens/settings_screen.dart';
+import '../features/settings/presentation/screens/edit_profile_screen.dart';
+import '../features/settings/presentation/screens/privacy_screen.dart';
+import '../features/settings/presentation/screens/security_screen.dart';
+import '../features/settings/presentation/screens/notifications_screen.dart';
+import '../features/home/presentation/screens/main_scaffold.dart';
+
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+final shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.watch(authProvider.notifier);
 
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     refreshListenable: GoRouterRefreshStream(authNotifier.stream),
     redirect: (context, state) {
@@ -69,16 +74,47 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/register',
         builder: (context, state) => const RegistrationScreen(),
       ),
-      GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+      // ShellRoute for Bottom Navigation
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainScaffold(navigationShell: navigationShell);
+        },
+        branches: [
+          // Branch 0: Home
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
+          ),
+          // Branch 1: Trips (Activity)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/trips',
+                builder: (context, state) => const TripsScreen(),
+              ),
+            ],
+          ),
+          // Branch 2: Profile (Account)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
       GoRoute(
         path: '/search',
+        // Parent navigator key to cover bottom nav
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const DestinationSearchScreen(),
       ),
-      GoRoute(
-        path: '/profile',
-        builder: (context, state) => const ProfileScreen(),
-      ),
-      GoRoute(path: '/trips', builder: (context, state) => const TripsScreen()),
       GoRoute(
         path: '/saved-places',
         builder: (context, state) => const SavedPlacesScreen(),

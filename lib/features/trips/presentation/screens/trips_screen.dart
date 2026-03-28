@@ -33,9 +33,10 @@ class _TripsScreenState extends ConsumerState<TripsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Trips'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
         elevation: 0,
+        automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<TripModel>>(
         future: _tripsFuture,

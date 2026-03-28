@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthRepository {
   static final AuthRepository _instance = AuthRepository._internal();
@@ -37,6 +38,9 @@ class AuthRepository {
     try {
       final doc = await _firestore.collection('users').doc(user.uid).get();
       _cachedUserExists = doc.exists;
+      if (doc.exists) {
+        _updateFcmToken(user.uid);
+      }
       return doc.exists;
     } catch (e) {
       print('Error checking user profile: $e');
@@ -63,6 +67,7 @@ class AuthRepository {
     try {
       final doc = await _firestore.collection('users').doc(user.uid).get();
       if (doc.exists && doc.data() != null) {
+        _updateFcmToken(user.uid);
         return UserModel.fromJson(doc.data()!);
       }
     } catch (e) {
@@ -115,6 +120,34 @@ class AuthRepository {
 
   // Sign Out
   Future<void> signOut() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        // Clear FCM token from Firestore
+        await _firestore.collection('users').doc(user.uid).update({
+          'fcmToken': FieldValue.delete(),
+        });
+        // Delete the device FCM token
+        await FirebaseMessaging.instance.deleteToken();
+      }
+    } catch (e) {
+      print('Error clearing FCM token on logout: $e');
+    }
+    _cachedUserExists = null;
     await _auth.signOut();
+  }
+
+  // Update FCM Token
+  Future<void> _updateFcmToken(String uid) async {
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        await _firestore.collection('users').doc(uid).update({
+          'fcmToken': token,
+        });
+      }
+    } catch (e) {
+      print('Error updating user FCM token: $e');
+    }
   }
 }

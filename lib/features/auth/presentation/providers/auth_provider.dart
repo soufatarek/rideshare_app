@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../domain/models/user_model.dart';
 
@@ -64,10 +66,39 @@ class AuthController extends StateNotifier<AuthState> {
       final user = await _repository.getUserProfile();
       if (mounted) {
         state = state.copyWith(user: user);
+        // Save FCM token after successful login
+        await _saveFCMToken(user?.id);
       }
     } catch (e) {
       // Silent fail or log
       print('Failed to fetch user profile: $e');
+    }
+  }
+
+  Future<void> _saveFCMToken(String? userId) async {
+    if (userId == null) return;
+    try {
+      final token = await NotificationService().getToken();
+      if (token != null) {
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'fcmToken': token,
+          'lastTokenUpdate': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      print('Failed to save FCM token: $e');
+    }
+  }
+
+  Future<void> _removeFCMToken(String userId) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'fcmToken': FieldValue.delete(),
+        'lastTokenUpdate': FieldValue.serverTimestamp(),
+      });
+      await NotificationService().deleteToken();
+    } catch (e) {
+      print('Failed to remove FCM token: $e');
     }
   }
 
@@ -138,6 +169,11 @@ class AuthController extends StateNotifier<AuthState> {
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
     final biometricEnabled = prefs.getBool('biometric_enabled') ?? false;
+
+    // Remove FCM token before sign out
+    if (state.user?.id != null) {
+      await _removeFCMToken(state.user!.id);
+    }
 
     // Only sign out from Firebase if biometrics are disabled
     if (!biometricEnabled) {

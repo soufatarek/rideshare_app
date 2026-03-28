@@ -1,7 +1,9 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// Pricing rates for different vehicle types in EGP (Egyptian Pounds)
+/// Used as local fallback only — the server calculates the real price.
 class VehiclePricing {
   final String vehicleId;
   final double baseFare; // EGP
@@ -16,28 +18,79 @@ class VehiclePricing {
   });
 }
 
+/// Server price estimate result
+class PriceEstimate {
+  final double estimatedPrice;
+  final double baseFare;
+  final double surgeMultiplier;
+  final String currency;
+
+  const PriceEstimate({
+    required this.estimatedPrice,
+    required this.baseFare,
+    required this.surgeMultiplier,
+    this.currency = 'EGP',
+  });
+
+  bool get hasSurge => surgeMultiplier > 1.0;
+
+  String get surgeLabel => '${surgeMultiplier}×';
+}
+
 class PricingService {
-  // Pricing in EGP (Egyptian Pounds)
+  // Local fallback pricing in EGP (Egyptian Pounds)
   static const Map<String, VehiclePricing> vehiclePricingMap = {
     '1': VehiclePricing(
       vehicleId: '1',
-      baseFare: 15.0, // 15 EGP base
-      perKmRate: 5.0, // 5 EGP per km
-      perMinuteRate: 0.5, // 0.5 EGP per minute
+      baseFare: 15.0,
+      perKmRate: 5.0,
+      perMinuteRate: 0.5,
     ),
     '2': VehiclePricing(
       vehicleId: '2',
-      baseFare: 30.0, // 30 EGP base (Black/Luxury)
-      perKmRate: 12.0, // 12 EGP per km
+      baseFare: 30.0,
+      perKmRate: 12.0,
       perMinuteRate: 1.0,
     ),
     '3': VehiclePricing(
       vehicleId: '3',
-      baseFare: 20.0, // 20 EGP base (XL)
-      perKmRate: 7.0, // 7 EGP per km
+      baseFare: 20.0,
+      perKmRate: 7.0,
       perMinuteRate: 0.7,
     ),
   };
+
+  /// Fetch server-side price estimate (calls Cloud Function)
+  static Future<PriceEstimate> fetchServerPrice(
+    String vehicleType,
+    double distanceKm,
+  ) async {
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'getEstimatedPrice',
+      );
+      final result = await callable.call<Map<String, dynamic>>({
+        'vehicleType': vehicleType,
+        'distanceKm': distanceKm,
+      });
+
+      final data = result.data;
+      return PriceEstimate(
+        estimatedPrice: (data['estimatedPrice'] as num).toDouble(),
+        baseFare: (data['baseFare'] as num).toDouble(),
+        surgeMultiplier: (data['surgeMultiplier'] as num).toDouble(),
+        currency: data['currency'] as String? ?? 'EGP',
+      );
+    } catch (e) {
+      // Fallback to local calculation if server is unavailable
+      final localPrice = calculatePrice(vehicleType, distanceKm);
+      return PriceEstimate(
+        estimatedPrice: localPrice,
+        baseFare: localPrice,
+        surgeMultiplier: 1.0,
+      );
+    }
+  }
 
   /// Calculate distance between two points in kilometers
   static double calculateDistanceKm(LatLng origin, LatLng destination) {
@@ -47,16 +100,15 @@ class PricingService {
       destination.latitude,
       destination.longitude,
     );
-    return distanceInMeters / 1000; // Convert to km
+    return distanceInMeters / 1000;
   }
 
-  /// Estimate trip time in minutes (rough estimate: 2 min per km in city)
+  /// Estimate trip time in minutes (rough: 2 min per km in city)
   static int estimateTripMinutes(double distanceKm) {
-    // Assume average speed of 30 km/h in city traffic
     return (distanceKm * 2).ceil();
   }
 
-  /// Calculate price for a vehicle type based on distance
+  /// Local price calculation (fallback only)
   static double calculatePrice(String vehicleId, double distanceKm) {
     final pricing = vehiclePricingMap[vehicleId];
     if (pricing == null) return 0.0;
@@ -68,7 +120,6 @@ class PricingService {
         (pricing.perKmRate * distanceKm) +
         (pricing.perMinuteRate * tripMinutes);
 
-    // Round to nearest whole number for EGP
     return fare.roundToDouble();
   }
 
