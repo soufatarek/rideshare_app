@@ -47,20 +47,11 @@ class AuthService {
     required String password,
   }) async {
     try {
-      // 🛑 CRITICAL: We MUST sign in anonymously to have a 'request.auth'
-      // object for your Firestore rules to allow the lookup.
-      if (_auth.currentUser == null) {
-        debugPrint(
-          "AuthService: No user signed in. Attempting anonymous sign-in...",
-        );
-        await _auth.signInAnonymously();
-        debugPrint(
-          "AuthService: Anonymous sign-in successful. UID: ${_auth.currentUser?.uid}",
-        );
-      }
-
       final ph = phone.trim();
-      debugPrint("AuthService: Fetching phone_index for '$ph'...");
+      debugPrint("AuthService: Fetching driver_phone_index for '$ph'...");
+
+      // Look up driver UID from the phone index
+      // Firestore rules allow unauthenticated reads on lookup collections
       final phoneSnap = await _db
           .collection('driver_phone_index')
           .doc(ph)
@@ -90,9 +81,6 @@ class AuthService {
         return {'success': false, 'error': 'Invalid password'};
       }
 
-      // If approved and password matches, we can optionally sign them in with a custom token
-      // or just return success if we are using custom auth logic.
-      // For now, returning success as requested for the test.
       return {'success': true, 'uid': uid, 'userData': data};
     } catch (e) {
       return {'success': false, 'error': e.toString()};

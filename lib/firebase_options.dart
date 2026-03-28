@@ -60,20 +60,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDawUK9eQOO9YI6QSWllw9fb3SoS6GCGUU',
-    appId: '1:668033377863:ios:d1ec7d04cfe83375767362',
+    appId: '1:668033377863:ios:62f754afb5869075767362',
     messagingSenderId: '668033377863',
     projectId: 'rideshare-app-485711',
     storageBucket: 'rideshare-app-485711.firebasestorage.app',
-    iosBundleId: 'com.example.rideshareApp',
+    iosBundleId: 'com.seiftarek.ridesharedriver',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDawUK9eQOO9YI6QSWllw9fb3SoS6GCGUU',
-    appId: '1:668033377863:ios:d1ec7d04cfe83375767362',
+    appId: '1:668033377863:ios:62f754afb5869075767362',
     messagingSenderId: '668033377863',
     projectId: 'rideshare-app-485711',
     storageBucket: 'rideshare-app-485711.firebasestorage.app',
-    iosBundleId: 'com.example.rideshareApp',
+    iosBundleId: 'com.seiftarek.ridesharedriver',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
