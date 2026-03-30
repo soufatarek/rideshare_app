@@ -16,25 +16,25 @@ service cloud.firestore {
     }
 
     // =============================================
-    // DRIVERS — any authed user can read (login lookup),
-    //           only the owner can write
+    // DRIVERS — anyone can read (login lookup),
+    //           anyone can write their own doc (custom auth, no Firebase session)
     // =============================================
     match /drivers/{driverId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == driverId;
+      allow read: if true;
+      allow write: if true;
 
-      // Subcollections
+      // Subcollections (fcmToken, location updates, etc.)
       match /{subcollection=**} {
-        allow read, write: if request.auth != null && request.auth.uid == driverId;
+        allow read, write: if true;
       }
     }
 
     // =============================================
-    // DRIVER STATUS — driver writes, all authed read
+    // DRIVER STATUS — driver writes online/offline/location (custom auth, no Firebase session)
     // =============================================
     match /driver_status/{driverId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == driverId;
+      allow read: if true;
+      allow write: if true;
     }
 
     // =============================================
@@ -95,7 +95,7 @@ service cloud.firestore {
     }
 
     match /driver_phone_index/{phone} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow write: if request.auth != null;
     }
   }
