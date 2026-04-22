@@ -74,6 +74,13 @@ class WalletScreen extends StatelessWidget {
               Icons.payment,
             ),
             const Divider(),
+            _buildPaymentMethodItem(
+              'Polar.sh',
+              'Digital payment gateway',
+              Icons.electric_bolt,
+              iconColor: const Color(0xFF0062FF),
+            ),
+            const Divider(),
             _buildPaymentMethodItem('Cash', '', Icons.money),
             const SizedBox(height: 24),
             TextButton.icon(
@@ -87,9 +94,14 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentMethodItem(String title, String subtitle, IconData icon) {
+  Widget _buildPaymentMethodItem(
+    String title,
+    String subtitle,
+    IconData icon, {
+    Color iconColor = Colors.black,
+  }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black),
+      leading: Icon(icon, color: iconColor),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
       trailing: const Icon(Icons.chevron_right),

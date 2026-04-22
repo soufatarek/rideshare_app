@@ -1,8 +1,173 @@
 const { onDocumentUpdated, onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+const fetch = require("node-fetch");
 
 admin.initializeApp();
+
+// ============================================================
+// POLAR.SH CONFIGURATION (server-side only — never exposed)
+// ============================================================
+const POLAR_CONFIG = {
+  accessToken: "polar_oat_q1QRq74WLAYjyrRRoPtY5PXc6zm1UCxK21k5E1P9yPw",
+  productId: "bbb4cd82-710a-4d3b-bc00-d4ff9cf3b1de",
+  // Toggle between sandbox and production:
+  baseUrl: "https://sandbox-api.polar.sh/v1",
+  // baseUrl: "https://api.polar.sh/v1",  // Uncomment for production
+};
+
+// ============================================================
+// CALLABLE: createPolarCheckout
+// Creates a Polar.sh checkout session for ride payment.
+// ============================================================
+exports.createPolarCheckout = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "You must be logged in.");
+  }
+
+  const { amount, rideId, currency } = request.data;
+
+  if (!amount || !rideId) {
+    throw new HttpsError(
+      "invalid-argument",
+      "amount and rideId are required."
+    );
+  }
+
+  try {
+    const response = await fetch(`${POLAR_CONFIG.baseUrl}/checkouts/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${POLAR_CONFIG.accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        product_id: POLAR_CONFIG.productId,
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: currency || "usd",
+        metadata: {
+          ride_id: rideId,
+          rider_id: request.auth.uid,
+        },
+        success_url: `rideshare://payment/success?ride_id=${rideId}`,
+        cancel_url: `rideshare://payment/cancel?ride_id=${rideId}`,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Polar checkout error:", data);
+      throw new HttpsError("internal", "Failed to create checkout session.");
+    }
+
+    // Store payment intent in Firestore for tracking
+    await admin.firestore().collection("payments").doc(rideId).set({
+      rideId: rideId,
+      riderId: request.auth.uid,
+      amount: amount,
+      currency: currency || "usd",
+      checkoutId: data.id || null,
+      checkoutUrl: data.url || null,
+      status: "pending",
+      provider: "polar",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`Polar checkout created for ride ${rideId}: ${data.url}`);
+
+    return { checkoutUrl: data.url, checkoutId: data.id };
+  } catch (error) {
+    console.error("Polar checkout exception:", error);
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError("internal", "Payment service unavailable.");
+  }
+});
+
+// ============================================================
+// CALLABLE: verifyPolarPayment
+// Checks if a Polar payment was completed for a ride.
+// ============================================================
+exports.verifyPolarPayment = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "You must be logged in.");
+  }
+
+  const { rideId } = request.data;
+  if (!rideId) {
+    throw new HttpsError("invalid-argument", "rideId is required.");
+  }
+
+  try {
+    const response = await fetch(
+      `${POLAR_CONFIG.baseUrl}/orders/?metadata[ride_id]=${rideId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${POLAR_CONFIG.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await response.json();
+    const paid = data.items && data.items.length > 0;
+
+    // Update payment record in Firestore
+    if (paid) {
+      await admin.firestore().collection("payments").doc(rideId).update({
+        status: "completed",
+        paidAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    return { paid, orderId: paid ? data.items[0].id : null };
+  } catch (error) {
+    console.error("Polar verify exception:", error);
+    throw new HttpsError("internal", "Payment verification failed.");
+  }
+});
+
+// ============================================================
+// CALLABLE: requestPolarRefund
+// Refunds a completed Polar payment.
+// ============================================================
+exports.requestPolarRefund = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "You must be logged in.");
+  }
+
+  const { orderId, reason } = request.data;
+  if (!orderId) {
+    throw new HttpsError("invalid-argument", "orderId is required.");
+  }
+
+  try {
+    const response = await fetch(`${POLAR_CONFIG.baseUrl}/refunds/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${POLAR_CONFIG.accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        order_id: orderId,
+        reason: reason || "Ride cancelled",
+      }),
+    });
+
+    if (response.ok) {
+      console.log(`Refund issued for order ${orderId}`);
+      return { success: true };
+    } else {
+      const data = await response.json();
+      console.error("Polar refund error:", data);
+      throw new HttpsError("internal", "Refund failed.");
+    }
+  } catch (error) {
+    console.error("Polar refund exception:", error);
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError("internal", "Refund service unavailable.");
+  }
+});
 
 // ============================================================
 // PRICING CONFIGURATION (EGP — Egyptian Pounds)

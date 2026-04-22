@@ -114,6 +114,13 @@ class ProfileScreen extends ConsumerWidget {
               'Privacy, Security, Notifications',
               onTap: () => context.push('/settings'),
             ),
+            _buildProfileItem(
+              context,
+              Icons.smart_toy_rounded,
+              'AI Support',
+              'Chat with RideBot for instant help',
+              onTap: () => context.push('/support'),
+            ),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,

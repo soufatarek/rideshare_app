@@ -1,4 +1,6 @@
-enum PaymentType { cash, card, wallet }
+import 'package:flutter/material.dart';
+
+enum PaymentType { cash, card, wallet, polar }
 
 class PaymentMethod {
   final String id;
@@ -12,4 +14,18 @@ class PaymentMethod {
     required this.type,
     this.subtitle,
   });
+
+  /// Returns the appropriate icon for each payment type.
+  IconData get icon {
+    switch (type) {
+      case PaymentType.cash:
+        return Icons.money;
+      case PaymentType.card:
+        return Icons.credit_card;
+      case PaymentType.wallet:
+        return Icons.account_balance_wallet;
+      case PaymentType.polar:
+        return Icons.electric_bolt;
+    }
+  }
 }

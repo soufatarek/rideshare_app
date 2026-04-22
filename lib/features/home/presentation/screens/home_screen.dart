@@ -102,9 +102,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ),
   ];
 
-  // Payment State — Cash only for V1
+  // Payment State
   final List<PaymentMethod> _paymentMethods = const [
     PaymentMethod(id: '1', name: 'Cash', type: PaymentType.cash),
+    PaymentMethod(
+      id: '2',
+      name: 'Polar.sh',
+      type: PaymentType.polar,
+      subtitle: 'Digital payment',
+    ),
   ];
   late PaymentMethod _selectedPaymentMethod;
 
@@ -891,12 +897,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ..._paymentMethods.map(
                 (method) => ListTile(
                   leading: Icon(
-                    method.type == PaymentType.cash
-                        ? Icons.money
-                        : Icons.credit_card,
-                    color: Colors.black,
+                    method.icon,
+                    color: method.type == PaymentType.polar
+                        ? const Color(0xFF0062FF)
+                        : Colors.black,
                   ),
                   title: Text(method.name),
+                  subtitle: method.subtitle != null
+                      ? Text(
+                          method.subtitle!,
+                          style: const TextStyle(fontSize: 12),
+                        )
+                      : null,
                   trailing:
                       _selectedPaymentMethod == method
                           ? const Icon(Icons.check, color: Colors.green)

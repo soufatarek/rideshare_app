@@ -274,11 +274,11 @@ class _VehicleSelectionSheetState extends State<VehicleSelectionSheet> {
                         child: Row(
                           children: [
                             Icon(
-                              widget.selectedPaymentMethod!.type ==
-                                      PaymentType.cash
-                                  ? Icons.money
-                                  : Icons.credit_card,
-                              color: Colors.white70,
+                              widget.selectedPaymentMethod!.icon,
+                              color: widget.selectedPaymentMethod!.type ==
+                                      PaymentType.polar
+                                  ? const Color(0xFF0062FF)
+                                  : Colors.white70,
                               size: 20,
                             ),
                             const SizedBox(width: 12),

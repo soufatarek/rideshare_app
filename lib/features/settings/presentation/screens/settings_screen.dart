@@ -49,6 +49,13 @@ class SettingsScreen extends ConsumerWidget {
             'Notifications',
             () => context.push('/notifications'),
           ),
+          _buildSectionHeader(context, 'Help'),
+          _buildSettingItem(
+            context,
+            Icons.smart_toy_rounded,
+            'AI Support Chat',
+            () => context.push('/support'),
+          ),
           _buildSectionHeader(context, 'More'),
           _buildSettingItem(context, Icons.logout, 'Log Out', () {
             ref.read(authProvider.notifier).signOut();

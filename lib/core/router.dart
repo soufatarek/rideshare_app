@@ -18,6 +18,7 @@ import '../features/settings/presentation/screens/privacy_screen.dart';
 import '../features/settings/presentation/screens/security_screen.dart';
 import '../features/settings/presentation/screens/notifications_screen.dart';
 import '../features/home/presentation/screens/main_scaffold.dart';
+import '../features/support/presentation/screens/ai_chat_screen.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -138,6 +139,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/security',
         builder: (context, state) => const SecurityScreen(),
+      ),
+      GoRoute(
+        path: '/support',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const AiChatScreen(),
       ),
       GoRoute(
         path: '/notifications',
